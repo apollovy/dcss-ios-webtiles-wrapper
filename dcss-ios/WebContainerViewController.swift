@@ -67,10 +67,24 @@ final class WebContainerViewController: UIViewController, UITextFieldDelegate {
     private func layoutViews() {
         webView
             .addAsSubview(to: view)
-            .constrainToSuperview()
+        constraintWebView()
 
         invisibleTextField
             .addAsSubview(to: view)
+    }
+    
+    private func constraintWebView() {
+        guard let superview = webView.superview else {
+            return
+        }
+        webView.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            webView.leadingAnchor.constraint(equalTo: superview.leadingAnchor),
+            webView.topAnchor.constraint(equalTo: superview.safeAreaLayoutGuide.topAnchor),
+            webView.trailingAnchor.constraint(equalTo: superview.trailingAnchor),
+            webView.bottomAnchor.constraint(equalTo: superview.bottomAnchor, constant: -defaultScrollViewBottomContentInset)
+        ])
     }
     
     private func attachChildViewControllers() {
@@ -128,7 +142,7 @@ final class WebContainerViewController: UIViewController, UITextFieldDelegate {
             keyCommandViewConstraints = [
                 kcView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
                 kcView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                kcView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -keyboardHeight),
+                kcView.topAnchor.constraint(equalTo: webView.bottomAnchor),
                 kcView.heightAnchor.constraint(equalToConstant: KeyCommandsView.LayoutConstants.height)
             ]
         } else {
@@ -169,7 +183,8 @@ final class WebContainerViewController: UIViewController, UITextFieldDelegate {
             duration: duration,
             curve: curve
         ) {
-            self.setWebviewContentInsets(keyboardVisible: true, keyboardHeight: keyboardHeight)
+            self.view?.frame = CGRect(x: self.view.frame.origin.x, y: self.view.frame.origin.y, width: self.view.window!.frame.width, height: self.view.window!.frame.height - keyboardHeight)
+            self.webView.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height - self.defaultScrollViewBottomContentInset)
             self.configureKeyCommandViewConstraints(keyboardVisible: true, keyboardHeight: keyboardHeight)
             self.view?.layoutIfNeeded()
         }
@@ -188,19 +203,13 @@ final class WebContainerViewController: UIViewController, UITextFieldDelegate {
             duration: duration,
             curve: curve
         ) {
-            self.setWebviewContentInsets(keyboardVisible: false)
+            self.view?.frame = self.view.window!.frame
+            self.webView.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height)
             self.configureKeyCommandViewConstraints(keyboardVisible: false)
             self.view?.layoutIfNeeded()
         }
         
         animator.startAnimation()
-    }
-    
-    @objc func setWebviewContentInsets(keyboardVisible: Bool, keyboardHeight: CGFloat = 0) {
-        let bottomInset = keyboardVisible ? defaultScrollViewBottomContentInset + keyboardHeight : defaultScrollViewBottomContentInset
-        let insets = UIEdgeInsets(top: 0, left: 0, bottom: bottomInset, right: 0)
-        webView.scrollView.contentInset = insets
-        webView.scrollView.scrollIndicatorInsets = insets
     }
 }
 
