@@ -91,8 +91,9 @@ struct KeyCommandsView: View {
         KeypressCommand.b,
         KeypressCommand.n,
         KeypressWithControlCommand.f,
+        KeypressWithControlCommand.x,
         ReturnKeypressCommand(),
-        KeydownCommand.escape
+        FixViewpointCommand(),
     ]
 }
 

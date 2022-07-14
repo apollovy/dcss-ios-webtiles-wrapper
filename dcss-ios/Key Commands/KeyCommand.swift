@@ -83,6 +83,7 @@ enum KeydownCommand: JavascriptKeycode, CaseIterable, KeyCommand {
 
 enum KeypressWithControlCommand: String, CaseIterable, KeyCommand {
     case f = "f" // find
+    case x = "x" // list visible
 
     var executableJavascript: String {
         JSBridge.sendControlKeyPressed(with: rawValue)
@@ -96,6 +97,8 @@ enum KeypressWithControlCommand: String, CaseIterable, KeyCommand {
         switch self {
         case .f:
             return "doc.text.magnifyingglass"
+        case .x:
+            return "eyeglasses"
         }
     }
 }
@@ -108,4 +111,10 @@ struct ReturnKeypressCommand: KeyCommand {
         $("body").trigger(press);
     """
     let symbolName: String = "return"
+}
+
+struct FixViewpointCommand : KeyCommand {
+    let id = "FixViewpointCommand"
+    let executableJavascript = "let vp = document.createElement('meta'); vp.name = 'viewport'; vp.content='width=device-width, initial-scale=0.5, user-scalable=no'; document.head.appendChild(vp)"
+    let symbolName = "viewfinder"
 }

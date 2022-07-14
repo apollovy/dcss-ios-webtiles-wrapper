@@ -56,10 +56,6 @@ final class WebContainerViewController: UIViewController, UITextFieldDelegate {
         webView.load(URLRequest(url: serverURL))
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-    }
-
     @objc func sendCommand() {
         invisibleTextField.becomeFirstResponder()
     }
